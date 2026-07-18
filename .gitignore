@@ -1,0 +1,10 @@
+# Secrets — never commit the API key
+.env
+
+# Data is reproducible from the code; git is for code
+data/
+
+# Python / Jupyter clutter
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
