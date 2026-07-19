@@ -31,3 +31,15 @@ Reusable logic lives in `src/` (API client, cleaning functions, ranking helpers)
    ```
 
 3. Run the notebooks in order (01 → 04).
+
+## Tests
+
+Unit tests cover the cleaning and analysis modules (no network needed):
+
+```bash
+python -m pytest
+```
+
+## Results
+
+Key insights, figures, and caveats are written up in [reports/final_report.md](reports/final_report.md).
