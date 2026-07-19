@@ -46,13 +46,17 @@ def extract_collection_name(collection):
 
 
 def extract_director(credits):
-    """Find the crew member whose job is 'Director'."""
+    """All crew members whose job is 'Director', joined with '|'.
+
+    Co-directed movies are common (both Avengers films: the Russo
+    brothers; both Frozen films: Buck & Lee). Keeping only the first
+    name would split a directing duo's track record across two rows
+    in any per-director analysis — so we keep them all.
+    """
     if not isinstance(credits, dict):
         return np.nan
-    for member in credits.get("crew", []):
-        if member.get("job") == "Director":
-            return member["name"]
-    return np.nan
+    directors = [m["name"] for m in credits.get("crew", []) if m.get("job") == "Director"]
+    return "|".join(directors) if directors else np.nan
 
 
 def clean_movies(raw_movies):

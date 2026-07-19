@@ -55,6 +55,13 @@ def test_director_found_among_crew():
 def test_director_missing_is_nan():
     assert pd.isna(extract_director({"crew": [{"name": "X", "job": "Editor"}]}))
 
+def test_co_directors_all_captured():
+    credits = {"crew": [
+        {"name": "Joe Russo", "job": "Director"},
+        {"name": "Anthony Russo", "job": "Director"},
+    ]}
+    assert extract_director(credits) == "Joe Russo|Anthony Russo"
+
 
 # ---------- clean_movies (pipeline behavior) ----------
 
