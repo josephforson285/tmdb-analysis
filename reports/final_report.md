@@ -1,9 +1,35 @@
 # TMDB Movie Data Analysis — Final Report
 
 **Author:** Joseph Forson
+
 **Data:** TMDB API, 18 movies (19 requested ids; id `0` is invalid and was skipped), snapshot taken 2026-07-18.
 
 ---
+
+## About the data
+
+**Source.** [The Movie Database (TMDB)](https://www.themoviedb.org) is a
+community-maintained film database; its free REST API exposes each movie's
+metadata, finances, and credits. Data was fetched from the v3 endpoint
+so each movie arrived with
+its full cast and crew in a single request.
+
+**What one row is.** The unit of observation is a single movie. The project brief
+supplied 19 fixed ids; id `0` does not exist (the API returns 404) and was
+skipped, leaving **18 movies** released **1997–2019**. This is a
+hand-picked sample.
+
+**What is measured per movie** (22 columns after cleaning):
+
+- *Identity:* title, tagline, overview, poster, release date
+- *Money:* budget and revenue in millions of USD 
+- *Audience:* vote count, vote average (0–10), TMDB popularity 
+- *Content:* genres, runtime, original and spoken languages
+- *Production:* companies, countries, franchise membership 
+- *People:* cast list and size, director(s), crew size
+
+
+
 
 ## 1. Methodology
 
@@ -26,14 +52,12 @@ Key cleaning decisions:
 - **Nested JSON flattened** to `|`-separated strings (genres, cast, companies, countries, languages).
 - **Zeros treated as missing.** A budget/revenue/runtime of 0 means "unknown", not "free" —
   left in place it would poison every mean and ROI, so it becomes `NaN`.
-- **Ratings with `vote_count = 0` invalidated** — an average over zero votes is noise.
+- **Ratings with `vote_count = 0` invalidated**.
 - **Co-directors kept.** Four movies are co-directed (both Avengers by the Russo brothers,
   both Frozen films by Buck & Lee). Keeping only the first credited director split those
   duos' track records across half-rows; the pipeline now stores all directors and the
   analysis credits each person per movie (`.explode()`).
-- **Metric definition:** ROI = revenue ÷ budget, as the project brief specifies (a value of 12
-  means the film grossed 12× its budget). The classic finance definition, (revenue − budget) ÷ budget,
-  is exactly this minus 1 and produces identical rankings.
+- **Metric definition:** ROI = revenue ÷ budget, as the project brief specifies.
 
 ## 2. Key findings
 
@@ -60,14 +84,15 @@ Budgets cluster in a narrow band (125–360 M$) while revenue spans 1.2–2.9 B$
 this elite sample, budget is a weak predictor: Star Wars: The Last Jedi spent $300M for
 $1.33B, while Titanic turned $200M into $2.26B.
 
-### ROI by genre — beware small n
+### ROI by genre 
 
 ![ROI by genre](figures/02_roi_by_genre.png)
 
 Comedy and Romance top the medians, but they rest on one and two movies respectively.
 The well-represented genres (Adventure n=15, Action and Science Fiction n=10) cluster
-around ROI 7–8. Sample size is printed on the chart because medians of two points are
-anecdotes, not statistics.
+around ROI 7–8. 
+<!-- Sample size is printed on the chart because medians of two points are
+anecdotes, not statistics. -->
 
 ### Buzz and quality are different things
 
@@ -97,18 +122,17 @@ mean revenue ($1,765M vs $1,683M) and median ROI (9.6 vs 7.8) while costing less
 ### Directors
 
 James Cameron leads with $5.19B over 2 movies; the Russo brothers follow at $4.85B over 2
-(and the highest mean rating, 8.24). Note this ranking *changed* after the co-director fix —
-before it, the Russos appeared as two unrelated one-movie directors.
+(and the highest mean rating, 8.24).
+ <!-- Note this ranking *changed* after the co-director fix —
+before it, the Russos appeared as two unrelated one-movie directors. -->
 
-## 3. Caveats — what this data can and cannot say
+## 3. Caveats 
 
 1. **Selection bias.** These 18 movies are hand-picked global mega-hits. Every conclusion
-   describes *this sample*; none generalizes to "movies" — e.g. the standalone-beats-franchise
-   result is driven entirely by Titanic and would likely reverse on a random sample.
+   describes *this sample*; none generalizes to "movies" .
 2. **Popularity is a moving snapshot** — values from another date are not comparable
    (TMDB has renormalized the metric's scale over time).
-3. **Tiny groups.** Standalone n=2; several genres n≤2. Medians shown, means avoided where
-   outliers dominate.
+3. **Tiny groups.** Standalone n=2; several genres n≤2. 
 
 ## 4. Conclusion
 
